@@ -13,7 +13,7 @@ public class App {
     private static final List<String> COMANDOS = List.of("ps", "df", "free");
     private static final StringBuilder informe = new StringBuilder();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         
         informe.append(GeneradorInforme.escribirTitulo(TITULO_DOC));
 
@@ -27,15 +27,19 @@ public class App {
         }
     }
 
-    private static String ejecutarComando(String comando) throws IOException {
-        Process proceso = new ProcessBuilder(comando).start();
+    private static String ejecutarComando(String comando) throws IOException, InterruptedException {
+        Process proceso = Runtime.getRuntime().exec(comando);
         StringBuilder resultado = new StringBuilder();
         String linea;
+
         try (BufferedReader lector = new BufferedReader(new InputStreamReader(proceso.getInputStream()))) {
             while ((linea = lector.readLine()) != null) {
                 resultado.append(linea).append(SALTO_LINEA);
             }
         }
+
+        proceso.waitFor();
+
         return resultado.toString();
     }
 }
